@@ -1,0 +1,22 @@
+{
+    "name": "resinsight",
+    "version-string": "2022.6.1",
+    "dependencies": [
+        "boost-filesystem",
+        "boost-spirit",
+        "fmt",
+        "grpc",
+        "eigen3"
+    ],
+    "builtin-baseline": "af2287382b1991dbdcb7e5112d236f3323b9dd7a",
+    "overrides": [
+        {
+            "name": "fmt",
+            "version": "6.0.0"
+        },
+        {
+            "name": "grpc",
+            "version": "1.37.0"
+        }
+    ]
+}
