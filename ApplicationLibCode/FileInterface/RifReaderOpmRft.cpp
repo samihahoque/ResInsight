@@ -459,6 +459,15 @@ void RifReaderOpmRft::buildMetaData()
     }
 }
 
+class SegNextBranchNo
+{
+public:
+    int segbrno;
+    int segnxt;
+
+    auto operator<=>( const SegNextBranchNo& other ) const = default;
+};
+
 //--------------------------------------------------------------------------------------------------
 ///
 //--------------------------------------------------------------------------------------------------
@@ -469,20 +478,62 @@ void RifReaderOpmRft::buildSegmentData()
     auto wellNames = m_opm_rft->listOfWells();
     auto dates     = m_opm_rft->listOfdates();
 
+    int debugOutputCount = 0;
+
     for ( const auto& wellName : wellNames )
     {
         for ( const auto& date : dates )
         {
-            std::vector<RifRftSegmentData> segmentsForWellDate;
+            std::vector<int> segnxt;
+            std::vector<int> segbrno;
 
-            std::vector<int> segnxt      = importWellData( wellName, "SEGNXT", date );
-            std::vector<int> segbrno     = importWellData( wellName, "SEGBRNO", date );
+            {
+                std::vector<int> segnxtFromFile  = importWellData( wellName, "SEGNXT", date );
+                std::vector<int> segbrnoFromFile = importWellData( wellName, "SEGBRNO", date );
+
+                if ( segnxtFromFile.empty() ) continue;
+                if ( segnxtFromFile.size() != segbrnoFromFile.size() ) continue;
+
+                std::vector<SegNextBranchNo> segNextBranchNo;
+                for ( size_t i = 0; i < segnxtFromFile.size(); i++ )
+                {
+                    segNextBranchNo.push_back( { .segbrno = segbrnoFromFile[i], .segnxt = segnxtFromFile[i] } );
+                }
+
+                std::sort( segNextBranchNo.begin(), segNextBranchNo.end() );
+
+                for ( const auto& obj : segNextBranchNo )
+                {
+                    segnxt.push_back( obj.segnxt );
+                    segbrno.push_back( obj.segbrno );
+                }
+            }
+
             std::vector<int> brnstValues = importWellData( wellName, "BRNST", date );
             std::vector<int> brnenValues = importWellData( wellName, "BRNEN", date );
-
-            if ( segnxt.empty() ) continue;
-            if ( segnxt.size() != segbrno.size() ) continue;
             if ( brnenValues.empty() || brnstValues.empty() ) continue;
+
+            bool enableDebugOutput = false;
+            if ( enableDebugOutput && debugOutputCount++ < 3 )
+            {
+                std::stringstream ss;
+
+                for ( size_t i = 0; i < segnxt.size(); i++ )
+                {
+                    ss << "segnxt: " << segnxt[i] << " ";
+                    ss << "segbrno: " << segbrno[i] << std::endl;
+                }
+
+                for ( size_t i = 0; i < brnstValues.size(); i++ )
+                {
+                    ss << "brnst: " << brnstValues[i] << " ";
+                    ss << "brnen: " << brnenValues[i] << std::endl;
+                }
+
+                RiaLogging::info( QString::fromStdString( ss.str() ) );
+            }
+
+            std::vector<RifRftSegmentData> segmentsForWellDate;
 
             std::vector<int> segNo;
             for ( size_t i = 0; i < segnxt.size(); i++ )
