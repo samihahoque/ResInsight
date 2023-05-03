@@ -56,6 +56,8 @@ public:
 
     RifRftSegment segmentForWell( const QString& wellName, const QDateTime& timeStep );
 
+    std::string segmentDataDebugLog() const;
+
 private:
     // Segment data
     // RftDate must be synced with definition in Opm::EclIO::ERft::RftDate
@@ -65,7 +67,6 @@ private:
     void openFiles( const QString& fileName, const QString& dataDeckFileName );
     void buildMetaData();
     void buildSegmentData();
-    void segmentDataDebugLog() const;
     bool isOpen() const;
     void importWellNames();
     void buildSegmentBranchTypes( const RftSegmentKey& segmentKey );

@@ -558,26 +558,34 @@ void RifReaderOpmRft::buildSegmentData()
 //--------------------------------------------------------------------------------------------------
 ///
 //--------------------------------------------------------------------------------------------------
-void RifReaderOpmRft::segmentDataDebugLog() const
+std::string RifReaderOpmRft::segmentDataDebugLog() const
 {
+    std::stringstream ss;
+
     for ( const auto& a : m_rftWellDateSegments )
     {
-        auto [wellName, date] = a.first;
-        auto segmentData      = a.second;
+        const auto& [wellName, date] = a.first;
+        const auto& segmentData      = a.second;
 
         const auto& [y, m, d] = date;
 
-        std::cout << "\nWell: " << wellName << "Date : " << y << " " << m << " " << d << " \n";
+        ss << "\nWell: " << wellName << "Date : " << y << " " << m << " " << d << " \n";
 
-        for ( const auto& r : segmentData.topology() )
+        auto toplogy = segmentData.topology();
+
+        std::sort( toplogy.begin(), toplogy.end() );
+
+        for ( const auto& r : toplogy )
         {
-            std::cout << "SEGNXT  " << std::setw( 2 ) << r.segNext() << ", ";
-            std::cout << "SEGBRNO " << std::setw( 2 ) << r.segBrno() << ", ";
-            std::cout << "BNRST   " << std::setw( 2 ) << r.segBrnst() << ", ";
-            std::cout << "BRNEN   " << std::setw( 2 ) << r.segBrnen() << ", ";
-            std::cout << "SEGNO   " << std::setw( 2 ) << r.segNo() << "\n";
+            ss << "SEGNXT  " << std::setw( 2 ) << r.segNext() << ", ";
+            ss << "SEGBRNO " << std::setw( 2 ) << r.segBrno() << ", ";
+            ss << "BNRST   " << std::setw( 2 ) << r.segBrnst() << ", ";
+            ss << "BRNEN   " << std::setw( 2 ) << r.segBrnen() << ", ";
+            ss << "SEGNO   " << std::setw( 2 ) << r.segNo() << "\n";
         }
     }
+
+    return ss.str();
 }
 
 //--------------------------------------------------------------------------------------------------

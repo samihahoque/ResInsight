@@ -38,12 +38,16 @@ public:
     int segBrnen() const;
     int segNo() const;
 
+    auto operator<=>( const RifRftSegmentData& other ) const = default;
+
 private:
-    int m_segNext;
+    // NB! The order of the members is used by the comparison operator
+
+    int m_segmentNo;
     int m_segbrno;
+    int m_segNext;
     int m_brnst;
     int m_brnen;
-    int m_segmentNo;
 };
 
 class RifRftSegment

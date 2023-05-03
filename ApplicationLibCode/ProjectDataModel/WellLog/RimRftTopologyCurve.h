@@ -84,6 +84,8 @@ private:
     caf::PdmField<caf::AppEnum<RiaDefines::RftBranchType>>      m_segmentBranchType;
     caf::PdmField<caf::AppEnum<RimRftTopologyCurve::CurveType>> m_curveType;
 
+    caf::PdmField<bool> m_showTopologyText;
+
 public:
     void setAdditionalDataSources( const std::vector<RimPlotCurve*>& additionalDataSources );
 };

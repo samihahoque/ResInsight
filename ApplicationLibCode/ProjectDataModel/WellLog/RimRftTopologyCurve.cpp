@@ -20,6 +20,7 @@
 
 #include "RiaColorTables.h"
 #include "RiaColorTools.h"
+#include "RiaLogging.h"
 #include "RiaSummaryTools.h"
 
 #include "RifReaderOpmRft.h"
@@ -33,6 +34,8 @@
 #include "RimWellLogPlot.h"
 
 #include "RiuPlotCurve.h"
+
+#include "cafPdmUiPushButtonEditor.h"
 
 CAF_PDM_SOURCE_INIT( RimRftTopologyCurve, "RimRftTopologyCurve" );
 
@@ -68,6 +71,9 @@ RimRftTopologyCurve::RimRftTopologyCurve()
     CAF_PDM_InitFieldNoDefault( &m_segmentBranchType, "SegmentBranchType", "Completion" );
 
     CAF_PDM_InitFieldNoDefault( &m_curveType, "CurveType", "Curve Type" );
+
+    CAF_PDM_InitField( &m_showTopologyText, "ShowTopologyText", false, "Display Topology in Log Window" );
+    caf::PdmUiPushButtonEditor::configureEditorForField( &m_showTopologyText );
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -227,6 +233,8 @@ void RimRftTopologyCurve::defineUiOrdering( QString uiConfigName, caf::PdmUiOrde
 
     RimStackablePlotCurve::defaultUiOrdering( uiOrdering );
 
+    uiOrdering.add( &m_showTopologyText );
+
     uiOrdering.skipRemainingFields( true );
 }
 
@@ -270,6 +278,23 @@ void RimRftTopologyCurve::fieldChangedByUi( const caf::PdmFieldHandle* changedFi
     RimWellLogCurve::fieldChangedByUi( changedField, oldValue, newValue );
 
     this->loadDataAndUpdate( true );
+
+    if ( changedField == &m_showTopologyText )
+    {
+        if ( m_summaryCase )
+        {
+            if ( auto rftReader = dynamic_cast<RifReaderOpmRft*>( m_summaryCase->rftReader() ) )
+            {
+                auto segmentDataText = rftReader->segmentDataDebugLog();
+
+                QString str = QString( "RimRftTopologyCurve::onLoadDataAndUpdate\n\n" + QString::fromStdString( segmentDataText ) );
+
+                RiaLogging::info( str );
+            }
+        }
+
+        m_showTopologyText = !m_showTopologyText();
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
