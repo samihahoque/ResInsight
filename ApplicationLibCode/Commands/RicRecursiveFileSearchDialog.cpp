@@ -1114,6 +1114,12 @@ QString RicRecursiveFileSearchDialog::fileExtensionForType( FileType fileType )
             return "CSV";
         case FileType::REVEAL_SUMMARY:
             return "CSV";
+        case FileType::SEISMIC_SEGY:
+            return "SEGY";
+        case FileType::SEISMIC_ZGY:
+            return "ZGY";
+        case FileType::SEISMIC_VDS:
+            return "VDS";
         default:
             return "*";
     }
@@ -1144,6 +1150,12 @@ QString RicRecursiveFileSearchDialog::fileNameForType( FileType fileType )
             return "StimPlan Summary File";
         case FileType::REVEAL_SUMMARY:
             return "Reveal Summary File";
+        case FileType::SEISMIC_SEGY:
+            return "Seismic SEG-Y File";
+        case FileType::SEISMIC_ZGY:
+            return "Seismic ZGY File";
+        case FileType::SEISMIC_VDS:
+            return "Seismic VDS File";
         default:
             return "*";
     }

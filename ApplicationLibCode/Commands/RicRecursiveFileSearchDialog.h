@@ -64,7 +64,10 @@ public:
         LAS,
         SURFACE,
         STIMPLAN_SUMMARY,
-        REVEAL_SUMMARY
+        REVEAL_SUMMARY,
+        SEISMIC_SEGY,
+        SEISMIC_ZGY,
+        SEISMIC_VDS
     };
 
     static RicRecursiveFileSearchDialogResult runRecursiveSearchDialog( QWidget*                     parent,
