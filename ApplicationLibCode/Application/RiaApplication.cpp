@@ -60,6 +60,8 @@
 #include "RimEclipseView.h"
 #include "RimEnsembleWellLogsCollection.h"
 #include "RimFaultReactivationModelCollection.h"
+#include "RimFileWellPath.h"
+#include "RimFileWellPathDataLoader.h"
 #include "RimFormationNamesCollection.h"
 #include "RimFractureTemplateCollection.h"
 #include "RimGeoMechCase.h"
@@ -70,10 +72,14 @@
 #include "RimGridSummaryCase.h"
 #include "RimIdenticalGridCaseGroup.h"
 #include "RimMainPlotCollection.h"
+#include "RimModeledWellPath.h"
+#include "RimModeledWellPathDataLoader.h"
 #include "RimObservedDataCollection.h"
 #include "RimObservedFmuRftData.h"
 #include "RimObservedSummaryData.h"
 #include "RimOilField.h"
+#include "RimOsduWellPath.h"
+#include "RimOsduWellPathDataLoader.h"
 #include "RimPlotWindow.h"
 #include "RimProject.h"
 #include "RimScriptCollection.h"
@@ -107,6 +113,7 @@
 #include "RiuViewer.h"
 #include "RiuViewerCommands.h"
 
+#include "cafDataLoadController.h"
 #include "cafPdmCodeGenerator.h"
 #include "cafPdmDataValueField.h"
 #include "cafPdmDefaultObjectFactory.h"
@@ -1542,6 +1549,8 @@ void RiaApplication::initialize()
     m_project->setPlotTemplateFolders( m_preferences->plotTemplateFolders() );
 
     caf::SelectionManager::instance()->setPdmRootObject( project() );
+
+    initializeDataLoadController();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1741,4 +1750,23 @@ RiaSumoConnector* RiaApplication::makeSumoConnector()
     }
 
     return m_sumoConnector;
+}
+
+//--------------------------------------------------------------------------------------------------
+///
+//--------------------------------------------------------------------------------------------------
+void RiaApplication::initializeDataLoadController()
+{
+    caf::DataLoadController* dataLoadController = caf::DataLoadController::instance();
+
+    const QString wellPathGeometryKeyword = "WELL_PATH_GEOMETRY";
+    dataLoadController->registerDataLoader( RimFileWellPath::classKeywordStatic(),
+                                            wellPathGeometryKeyword,
+                                            std::make_shared<RimFileWellPathDataLoader>() );
+    dataLoadController->registerDataLoader( RimOsduWellPath::classKeywordStatic(),
+                                            wellPathGeometryKeyword,
+                                            std::make_shared<RimOsduWellPathDataLoader>() );
+    dataLoadController->registerDataLoader( RimModeledWellPath::classKeywordStatic(),
+                                            wellPathGeometryKeyword,
+                                            std::make_shared<RimModeledWellPathDataLoader>() );
 }
